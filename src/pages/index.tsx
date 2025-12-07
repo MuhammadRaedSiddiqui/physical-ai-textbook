@@ -16,7 +16,7 @@ function HomepageHeader() {
         <div>
           <Link
             className="button button--secondary button--lg"
-            to="/docs/01-module-1-ros2/week-01-intro">
+            to="/docs/module-1-ros2/week-01-intro">
             Start the Course
           </Link>
         </div>
