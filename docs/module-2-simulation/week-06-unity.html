@@ -5,7 +5,7 @@
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">Week 6 - High-Fidelity Rendering with Unity | Physical AI &amp; Humanoid Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-2-simulation/week-06-unity"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Week 6 - High-Fidelity Rendering with Unity | Physical AI &amp; Humanoid Robotics"><meta data-rh="true" name="description" content="1. Why Unity?"><meta data-rh="true" property="og:description" content="1. Why Unity?"><link data-rh="true" rel="icon" href="/physical-ai-textbook/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-2-simulation/week-06-unity"><link data-rh="true" rel="alternate" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-2-simulation/week-06-unity" hreflang="en"><link data-rh="true" rel="alternate" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-2-simulation/week-06-unity" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Week 6 - High-Fidelity Rendering with Unity","item":"https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-2-simulation/week-06-unity"}]}</script><link rel="stylesheet" href="/physical-ai-textbook/assets/css/styles.4b065cb5.css">
 <script src="/physical-ai-textbook/assets/js/runtime~main.d641890f.js" defer="defer"></script>
-<script src="/physical-ai-textbook/assets/js/main.f70d0b61.js" defer="defer"></script>
+<script src="/physical-ai-textbook/assets/js/main.5da12e09.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -28,6 +28,122 @@
 <li class="">Import the <code>ROS-TCP-Connector</code> asset into your Unity project.</li>
 <li class="">Configure the TCP endpoint in both ROS 2 and Unity to point to the same IP address and port.</li>
 <li class="">You can now publish/subscribe to ROS topics from within your Unity C# scripts.</li>
-</ol></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/02-module-2-simulation/week-06-unity.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/module-2-simulation/week-05-gazebo"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Week 5 - Physics Simulation with Gazebo</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/module-2-simulation/week-07-sim-to-real"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Week 7 - Sim-to-Real Transfer</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-why-unity" class="table-of-contents__link toc-highlight">1. Why Unity?</a></li><li><a href="#2-urdf-importer-workflow" class="table-of-contents__link toc-highlight">2. URDF Importer Workflow</a></li><li><a href="#3-ros-unity-integration" class="table-of-contents__link toc-highlight">3. ROS-Unity Integration</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/01-module-1-ros2/week-01-intro">Docs</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/facebook/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 My Project, Inc. Built with Docusaurus.</div></div></div></footer></div>
+</ol></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/02-module-2-simulation/week-06-unity.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/module-2-simulation/week-05-gazebo"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Week 5 - Physics Simulation with Gazebo</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/module-2-simulation/week-07-sim-to-real"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Week 7 - Sim-to-Real Transfer</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-why-unity" class="table-of-contents__link toc-highlight">1. Why Unity?</a></li><li><a href="#2-urdf-importer-workflow" class="table-of-contents__link toc-highlight">2. URDF Importer Workflow</a></li><li><a href="#3-ros-unity-integration" class="table-of-contents__link toc-highlight">3. ROS-Unity Integration</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/01-module-1-ros2/week-01-intro">Docs</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/facebook/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 My Project, Inc. Built with Docusaurus.</div></div></div></footer><div class="chatbot-wrapper"><button class="chatbot-toggle">🤖 Ask AI</button><style>
+        .chatbot-wrapper {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 9999;
+          font-family: var(--ifm-font-family-base);
+        }
+        .chatbot-toggle {
+          background: var(--ifm-color-primary);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transition: transform 0.2s;
+        }
+        .chatbot-toggle:hover {
+          transform: scale(1.05);
+        }
+        .chatbot-window {
+          width: 360px;
+          height: 550px;
+          background: var(--ifm-background-color);
+          border: 1px solid var(--ifm-color-emphasis-200);
+          border-radius: 12px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .chatbot-header {
+          background: var(--ifm-color-primary);
+          color: white;
+          padding: 12px 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: bold;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          line-height: 1;
+        }
+        .chatbot-messages {
+          flex: 1;
+          padding: 16px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          background: var(--ifm-background-surface-color);
+        }
+        .message {
+          max-width: 85%;
+          padding: 10px 14px;
+          border-radius: 12px;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+        .message.user {
+          align-self: flex-end;
+          background: var(--ifm-color-primary);
+          color: white;
+          border-bottom-right-radius: 2px;
+        }
+        .message.bot {
+          align-self: flex-start;
+          background: var(--ifm-color-emphasis-100);
+          color: var(--ifm-font-color-base);
+          border-bottom-left-radius: 2px;
+        }
+        .message-sources {
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px solid rgba(0,0,0,0.1);
+          font-size: 11px;
+        }
+        .message-sources ul {
+          margin: 0;
+          padding-left: 16px;
+        }
+        .chatbot-input-area {
+          padding: 12px;
+          border-top: 1px solid var(--ifm-color-emphasis-200);
+          display: flex;
+          gap: 8px;
+          background: var(--ifm-background-color);
+        }
+        .chatbot-input-area input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid var(--ifm-color-emphasis-300);
+          border-radius: 20px;
+          background: var(--ifm-background-color);
+          color: var(--ifm-font-color-base);
+        }
+        .chatbot-input-area button {
+          background: var(--ifm-color-primary);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 20px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+        .chatbot-input-area button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      </style></div></div>
 </body>
 </html>

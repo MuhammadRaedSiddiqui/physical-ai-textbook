@@ -5,7 +5,7 @@
 <meta name="generator" content="Docusaurus v3.9.2">
 <title data-rh="true">Week 12 - Voice-to-Action &amp; Cognitive Planning | Physical AI &amp; Humanoid Robotics</title><meta data-rh="true" name="viewport" content="width=device-width,initial-scale=1"><meta data-rh="true" name="twitter:card" content="summary_large_image"><meta data-rh="true" property="og:image" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" name="twitter:image" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/img/docusaurus-social-card.jpg"><meta data-rh="true" property="og:url" content="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-4-vla/week-12-voice-action"><meta data-rh="true" property="og:locale" content="en"><meta data-rh="true" name="docusaurus_locale" content="en"><meta data-rh="true" name="docsearch:language" content="en"><meta data-rh="true" name="docusaurus_version" content="current"><meta data-rh="true" name="docusaurus_tag" content="docs-default-current"><meta data-rh="true" name="docsearch:version" content="current"><meta data-rh="true" name="docsearch:docusaurus_tag" content="docs-default-current"><meta data-rh="true" property="og:title" content="Week 12 - Voice-to-Action &amp; Cognitive Planning | Physical AI &amp; Humanoid Robotics"><meta data-rh="true" name="description" content="1. Voice Commands with OpenAI Whisper"><meta data-rh="true" property="og:description" content="1. Voice Commands with OpenAI Whisper"><link data-rh="true" rel="icon" href="/physical-ai-textbook/img/favicon.ico"><link data-rh="true" rel="canonical" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-4-vla/week-12-voice-action"><link data-rh="true" rel="alternate" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-4-vla/week-12-voice-action" hreflang="en"><link data-rh="true" rel="alternate" href="https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-4-vla/week-12-voice-action" hreflang="x-default"><script data-rh="true" type="application/ld+json">{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Week 12 - Voice-to-Action & Cognitive Planning","item":"https://MuhammadRaedSiddiqui.github.io/physical-ai-textbook/docs/module-4-vla/week-12-voice-action"}]}</script><link rel="stylesheet" href="/physical-ai-textbook/assets/css/styles.4b065cb5.css">
 <script src="/physical-ai-textbook/assets/js/runtime~main.d641890f.js" defer="defer"></script>
-<script src="/physical-ai-textbook/assets/js/main.f70d0b61.js" defer="defer"></script>
+<script src="/physical-ai-textbook/assets/js/main.5da12e09.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
 <svg style="display: none;"><defs>
@@ -22,6 +22,122 @@
 <p>This JSON sequence can then be executed one step at a time by the VLA model.</p>
 <h2 class="anchor anchorTargetStickyNavbar_Vzrq" id="3-python-example-gpt-4-prompt">3. Python Example (GPT-4 Prompt)<a href="#3-python-example-gpt-4-prompt" class="hash-link" aria-label="Direct link to 3. Python Example (GPT-4 Prompt)" title="Direct link to 3. Python Example (GPT-4 Prompt)" translate="no">​</a></h2>
 <div class="language-python codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#393A34;--prism-background-color:#f6f8fa"><div class="codeBlockContent_QJqH"><pre tabindex="0" class="prism-code language-python codeBlock_bY9V thin-scrollbar" style="color:#393A34;background-color:#f6f8fa"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#393A34"><span class="token keyword" style="color:#00009f">import</span><span class="token plain"> openai</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># You would need to set up your OpenAI API key</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># openai.api_key = &#x27;YOUR_API_KEY&#x27;</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token keyword" style="color:#00009f">def</span><span class="token plain"> </span><span class="token function" style="color:#d73a49">get_action_sequence</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain">command</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"> </span><span class="token builtin">str</span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"> </span><span class="token operator" style="color:#393A34">-</span><span class="token operator" style="color:#393A34">&gt;</span><span class="token plain"> </span><span class="token builtin">str</span><span class="token punctuation" style="color:#393A34">:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    response </span><span class="token operator" style="color:#393A34">=</span><span class="token plain"> openai</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">Completion</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">create</span><span class="token punctuation" style="color:#393A34">(</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        engine</span><span class="token operator" style="color:#393A34">=</span><span class="token string" style="color:#e3116c">&quot;text-davinci-003&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"> </span><span class="token comment" style="color:#999988;font-style:italic"># Or a chat model like gpt-4</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        prompt</span><span class="token operator" style="color:#393A34">=</span><span class="token string-interpolation string" style="color:#e3116c">f&quot;&quot;&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        You are a cognitive planner for a home robot.</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        Convert the following high-level command into a JSON list of actions.</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        The available actions are: find, pick_up, place.</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        Command: &quot;</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">{</span><span class="token string-interpolation interpolation">command</span><span class="token string-interpolation interpolation punctuation" style="color:#393A34">}</span><span class="token string-interpolation string" style="color:#e3116c">&quot;</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        JSON sequence:</span><br></span><span class="token-line" style="color:#393A34"><span class="token string-interpolation string" style="color:#e3116c">        &quot;&quot;&quot;</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        temperature</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">0.0</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">        max_tokens</span><span class="token operator" style="color:#393A34">=</span><span class="token number" style="color:#36acaa">200</span><span class="token punctuation" style="color:#393A34">,</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token punctuation" style="color:#393A34">)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain">    </span><span class="token keyword" style="color:#00009f">return</span><span class="token plain"> response</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">choices</span><span class="token punctuation" style="color:#393A34">[</span><span class="token number" style="color:#36acaa">0</span><span class="token punctuation" style="color:#393A34">]</span><span class="token punctuation" style="color:#393A34">.</span><span class="token plain">text</span><br></span><span class="token-line" style="color:#393A34"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># Example usage:</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># action_json = get_action_sequence(&quot;Clean up my desk&quot;)</span><span class="token plain"></span><br></span><span class="token-line" style="color:#393A34"><span class="token plain"></span><span class="token comment" style="color:#999988;font-style:italic"># print(action_json)</span><br></span></code></pre></div></div>
-<p>This example shows how to use the OpenAI API to generate an action sequence from a natural language command.</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/04-module-4-vla/week-12-voice-action.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/module-4-vla/week-11-vla-models"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Week 11 - Vision-Language-Action (VLA) Models</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/capstone/week-13-project"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Week 13 - Capstone The Autonomous Humanoid</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-voice-commands-with-openai-whisper" class="table-of-contents__link toc-highlight">1. Voice Commands with OpenAI Whisper</a></li><li><a href="#2-cognitive-planning-with-gpt-4" class="table-of-contents__link toc-highlight">2. Cognitive Planning with GPT-4</a></li><li><a href="#3-python-example-gpt-4-prompt" class="table-of-contents__link toc-highlight">3. Python Example (GPT-4 Prompt)</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/01-module-1-ros2/week-01-intro">Docs</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/facebook/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 My Project, Inc. Built with Docusaurus.</div></div></div></footer></div>
+<p>This example shows how to use the OpenAI API to generate an action sequence from a natural language command.</p></div><footer class="theme-doc-footer docusaurus-mt-lg"><div class="row margin-top--sm theme-doc-footer-edit-meta-row"><div class="col noPrint_WFHX"><a href="https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/docs/04-module-4-vla/week-12-voice-action.md" target="_blank" rel="noopener noreferrer" class="theme-edit-this-page"><svg fill="currentColor" height="20" width="20" viewBox="0 0 40 40" class="iconEdit_Z9Sw" aria-hidden="true"><g><path d="m34.5 11.7l-3 3.1-6.3-6.3 3.1-3q0.5-0.5 1.2-0.5t1.1 0.5l3.9 3.9q0.5 0.4 0.5 1.1t-0.5 1.2z m-29.5 17.1l18.4-18.5 6.3 6.3-18.4 18.4h-6.3v-6.2z"></path></g></svg>Edit this page</a></div><div class="col lastUpdated_JAkA"></div></div></footer></article><nav class="docusaurus-mt-lg pagination-nav" aria-label="Docs pages"><a class="pagination-nav__link pagination-nav__link--prev" href="/physical-ai-textbook/docs/module-4-vla/week-11-vla-models"><div class="pagination-nav__sublabel">Previous</div><div class="pagination-nav__label">Week 11 - Vision-Language-Action (VLA) Models</div></a><a class="pagination-nav__link pagination-nav__link--next" href="/physical-ai-textbook/docs/capstone/week-13-project"><div class="pagination-nav__sublabel">Next</div><div class="pagination-nav__label">Week 13 - Capstone The Autonomous Humanoid</div></a></nav></div></div><div class="col col--3"><div class="tableOfContents_bqdL thin-scrollbar theme-doc-toc-desktop"><ul class="table-of-contents table-of-contents__left-border"><li><a href="#1-voice-commands-with-openai-whisper" class="table-of-contents__link toc-highlight">1. Voice Commands with OpenAI Whisper</a></li><li><a href="#2-cognitive-planning-with-gpt-4" class="table-of-contents__link toc-highlight">2. Cognitive Planning with GPT-4</a></li><li><a href="#3-python-example-gpt-4-prompt" class="table-of-contents__link toc-highlight">3. Python Example (GPT-4 Prompt)</a></li></ul></div></div></div></div></main></div></div></div><footer class="theme-layout-footer footer footer--dark"><div class="container container-fluid"><div class="row footer__links"><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Docs</div><ul class="footer__items clean-list"><li class="footer__item"><a class="footer__link-item" href="/physical-ai-textbook/docs/01-module-1-ros2/week-01-intro">Docs</a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">Community</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://stackoverflow.com/questions/tagged/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Stack Overflow<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://discordapp.com/invite/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">Discord<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li><li class="footer__item"><a href="https://x.com/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">X<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div><div class="theme-layout-footer-column col footer__col"><div class="footer__title">More</div><ul class="footer__items clean-list"><li class="footer__item"><a href="https://github.com/facebook/docusaurus" target="_blank" rel="noopener noreferrer" class="footer__link-item">GitHub<svg width="13.5" height="13.5" aria-label="(opens in new tab)" class="iconExternalLink_nPIU"><use href="#theme-svg-external-link"></use></svg></a></li></ul></div></div><div class="footer__bottom text--center"><div class="footer__copyright">Copyright © 2025 My Project, Inc. Built with Docusaurus.</div></div></div></footer><div class="chatbot-wrapper"><button class="chatbot-toggle">🤖 Ask AI</button><style>
+        .chatbot-wrapper {
+          position: fixed;
+          bottom: 20px;
+          right: 20px;
+          z-index: 9999;
+          font-family: var(--ifm-font-family-base);
+        }
+        .chatbot-toggle {
+          background: var(--ifm-color-primary);
+          color: white;
+          border: none;
+          padding: 12px 24px;
+          border-radius: 50px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+          transition: transform 0.2s;
+        }
+        .chatbot-toggle:hover {
+          transform: scale(1.05);
+        }
+        .chatbot-window {
+          width: 360px;
+          height: 550px;
+          background: var(--ifm-background-color);
+          border: 1px solid var(--ifm-color-emphasis-200);
+          border-radius: 12px;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+          display: flex;
+          flex-direction: column;
+          overflow: hidden;
+        }
+        .chatbot-header {
+          background: var(--ifm-color-primary);
+          color: white;
+          padding: 12px 16px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          font-weight: bold;
+        }
+        .close-btn {
+          background: none;
+          border: none;
+          color: white;
+          font-size: 24px;
+          cursor: pointer;
+          line-height: 1;
+        }
+        .chatbot-messages {
+          flex: 1;
+          padding: 16px;
+          overflow-y: auto;
+          display: flex;
+          flex-direction: column;
+          gap: 12px;
+          background: var(--ifm-background-surface-color);
+        }
+        .message {
+          max-width: 85%;
+          padding: 10px 14px;
+          border-radius: 12px;
+          font-size: 14px;
+          line-height: 1.5;
+        }
+        .message.user {
+          align-self: flex-end;
+          background: var(--ifm-color-primary);
+          color: white;
+          border-bottom-right-radius: 2px;
+        }
+        .message.bot {
+          align-self: flex-start;
+          background: var(--ifm-color-emphasis-100);
+          color: var(--ifm-font-color-base);
+          border-bottom-left-radius: 2px;
+        }
+        .message-sources {
+          margin-top: 8px;
+          padding-top: 8px;
+          border-top: 1px solid rgba(0,0,0,0.1);
+          font-size: 11px;
+        }
+        .message-sources ul {
+          margin: 0;
+          padding-left: 16px;
+        }
+        .chatbot-input-area {
+          padding: 12px;
+          border-top: 1px solid var(--ifm-color-emphasis-200);
+          display: flex;
+          gap: 8px;
+          background: var(--ifm-background-color);
+        }
+        .chatbot-input-area input {
+          flex: 1;
+          padding: 8px 12px;
+          border: 1px solid var(--ifm-color-emphasis-300);
+          border-radius: 20px;
+          background: var(--ifm-background-color);
+          color: var(--ifm-font-color-base);
+        }
+        .chatbot-input-area button {
+          background: var(--ifm-color-primary);
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 20px;
+          cursor: pointer;
+          font-size: 13px;
+        }
+        .chatbot-input-area button:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+        }
+      </style></div></div>
 </body>
 </html>
