@@ -60,6 +60,10 @@ Answer:"""
 prompt = ChatPromptTemplate.from_template(rag_template)
 output_parser = StrOutputParser()
 
+@app.get("/")
+async def root():
+    return {"status": "ok", "message": "Physical AI Brain is running!"}
+
 @app.post("/chat")
 async def chat_endpoint(request: ChatRequest):
     try:
