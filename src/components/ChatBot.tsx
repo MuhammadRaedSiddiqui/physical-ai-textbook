@@ -32,7 +32,7 @@ export default function Chatbot() {
 
     try {
       // 🚀 Connects to your local Python/FastAPI backend
-      const response = await fetch('http://localhost:8000/chat', {
+      const response = await fetch('https://physical-ai-textbook.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ question: userMessage }),
