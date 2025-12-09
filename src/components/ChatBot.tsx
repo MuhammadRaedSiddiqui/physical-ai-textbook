@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import clsx from 'clsx';
+import { v4 as uuidv4 } from 'uuid';
 
 // Simple types for our messages
 type Message = {
@@ -16,6 +17,17 @@ export default function Chatbot() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const [sessionId, setSessionId] = useState('');
+
+  useEffect(() => {
+    // Check if session ID exists in local storage
+    let storedSession = localStorage.getItem('chat_session_id');
+    if (!storedSession) {
+      storedSession = crypto.randomUUID(); // Browser native UUID or use 'uuid' package
+      localStorage.setItem('chat_session_id', storedSession);
+    }
+    setSessionId(storedSession);
+  }, []);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -32,10 +44,13 @@ export default function Chatbot() {
 
     try {
       // 🚀 Connects to your local Python/FastAPI backend
-      const response = await fetch('https://physical-ai-textbook.onrender.com/chat', {
+      const response = await fetch('https://physical-ai-textbook.onrender.com/chat', { 
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ question: userMessage }),
+        body: JSON.stringify({ 
+            question: userMessage,
+            session_id: sessionId // <--- SEND THIS
+        }),
       });
 
       if (!response.ok) throw new Error('Network response was not ok');
