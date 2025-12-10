@@ -56,7 +56,7 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      const response = await fetch("https://physical-ai-textbook.onrender.com", {
+      const response = await fetch("https://physical-ai-textbook.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
@@ -107,7 +107,7 @@ export default function Chatbot() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
             transition={{ duration: 0.3, ease: "easeOut" }}
-            className="mb-4 origin-bottom-right"
+            className="mb-2 origin-bottom-right"
           >
             <Card className="w-[360px] sm:w-[400px] h-[550px] border border-cyan-500/30 bg-gradient-to-br from-black/95 via-zinc-950/95 to-black/95 backdrop-blur-2xl shadow-[0_0_60px_-10px_rgba(0,229,255,0.3)] rounded-2xl overflow-hidden flex flex-col">
               
