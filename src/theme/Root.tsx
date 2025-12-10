@@ -1,12 +1,14 @@
 import React, { ReactNode } from 'react';
-import Chatbot from '../components/ChatBot'; // Check that this path matches your file structure
+import {HeroUIProvider} from "@heroui/react";
+import Chatbot from '../components/ChatBot';
 
-// The Root component wraps the entire Docusaurus application
 export default function Root({children}: {children: ReactNode}) {
   return (
-    <>
-      {children}
-      <Chatbot />
-    </>
+    <HeroUIProvider>
+      <div className="dark text-foreground bg-background">
+        {children}
+        <Chatbot />
+      </div>
+    </HeroUIProvider>
   );
 }

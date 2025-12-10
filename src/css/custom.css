@@ -1,30 +1,604 @@
-/**
- * Any CSS included here will be global. The classic template
- * bundles Infima by default. Infima is a CSS framework designed to
- * work well for content-centric websites.
- */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Rajdhani:wght@500;600;700&family=JetBrains+Mono:wght@400;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-/* You can override the default Infima variables here. */
+/* =========================================
+   1. GLOBAL CYBERPALETTE & VARIABLES
+   ========================================= */
 :root {
-  --ifm-color-primary: #2e8555;
-  --ifm-color-primary-dark: #29784c;
-  --ifm-color-primary-darker: #277148;
-  --ifm-color-primary-darkest: #205d3b;
-  --ifm-color-primary-light: #33925d;
-  --ifm-color-primary-lighter: #359962;
-  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
+  --ifm-font-family-monospace: 'JetBrains Mono', monospace; /* Hacker terminal code font */
+
+  --ifm-font-size-base: 22px; /* Increased from default 16px */
+  --ifm-line-height-base: 1.6;
+  /* Neon Cyan Primary Scheme */
+  --ifm-color-primary: #00f0ff;
+  --ifm-color-primary-dark: #00d8e6;
+  --ifm-color-primary-darker: #00ccda;
+  --ifm-color-primary-darkest: #00a8b3;
+  --ifm-color-primary-light: #1affff;
+  --ifm-color-primary-lighter: #26ffff;
+  --ifm-color-primary-lightest: #4dffff;
+  
+  /* Force Dark/Black Theme Backgrounds */
+  --ifm-background-color: #000000;
+  --ifm-background-surface-color: #09090b; /* Zinc-950 for cards */
+  --ifm-text-color: #ffffff;
+  --ifm-link-color: #00f0ff;
+  
   --ifm-code-font-size: 95%;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.1);
+  --docusaurus-highlighted-code-line-bg: rgba(0, 240, 255, 0.1);
+
+  /* Navbar Height for spacing */
+  --ifm-navbar-height: 4rem;
 }
 
-/* For readability concerns, you should choose a lighter palette in dark mode. */
-[data-theme='dark'] {
-  --ifm-color-primary: #25c2a0;
-  --ifm-color-primary-dark: #21af90;
-  --ifm-color-primary-darker: #1fa588;
-  --ifm-color-primary-darkest: #1a8870;
-  --ifm-color-primary-light: #29d5b0;
-  --ifm-color-primary-lighter: #32d8b4;
-  --ifm-color-primary-lightest: #4fddbf;
-  --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
+/* Force Dark Mode colors even if system is light */
+[data-theme='light'] {
+  --ifm-color-primary: #00f0ff;
+  --ifm-background-color: #000000;
+  --ifm-background-surface-color: #09090b;
+  --ifm-text-color: #ffffff;
+  --ifm-link-color: #00f0ff;
+}
+
+
+h1, h2, h3, h4, h5, h6, .navbar__title, .footer__title {
+  font-family: 'Rajdhani', sans-serif !important;
+  text-transform: uppercase; /* Makes it look more like a HUD */
+  letter-spacing: 0.05em; /* Adds breath to the caps */
+}
+/* =========================================
+   2. NAVBAR & FOOTER OVERRIDES (THE FIX)
+   ========================================= */
+
+/* Glassmorphism Navbar */
+.navbar {
+  background-color: rgba(0, 0, 0, 0.7) !important; /* Semi-transparent black */
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+}
+
+/* Gradient Text for Logo/Title */
+.navbar__title {
+  font-weight: 800;
+  letter-spacing: 0.05em;
+  background: linear-gradient(to right, #00f0ff, #bd00ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Resize Navbar Logo */
+.navbar__logo {
+  height: 28px !important;
+  width: auto !important;
+}
+
+.navbar__logo img {
+  height: 28px !important;
+  width: auto !important;
+}
+
+/* Clean Footer */
+.footer {
+  background-color: #000000;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer__title {
+  color: #00f0ff;
+  font-weight: bold;
+  letter-spacing: 0.1em;
+}
+
+.footer__link-item {
+  color: #a1a1aa; /* Zinc-400 */
+}
+
+.footer__link-item:hover {
+  color: #00f0ff;
+  text-decoration: none;
+}
+
+/* =========================================
+   3. GLOBAL STYLES & SCROLLBAR
+   ========================================= */
+body {
+  background-color: #000000;
+  color: #ffffff;
+  overflow-x: hidden; /* Prevent horizontal scroll from effects */
+}
+
+/* Custom Cyberpunk Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: #09090b; 
+}
+::-webkit-scrollbar-thumb {
+  background: #27272a; 
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3f3f46; 
+}
+
+/* =========================================
+   4. ANIMATIONS & EFFECTS (React Bits)
+   ========================================= */
+
+/* The Aurora Animation */
+@keyframes aurora {
+  0% { transform: rotate(0deg) scale(1); }
+  50% { transform: rotate(180deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+.aurora-bg {
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: conic-gradient(
+    from 90deg at 50% 50%,
+    #000000 0%,
+    #09090b 40%,
+    #00151a 60%, 
+    #000000 100%
+  );
+  filter: blur(80px);
+  animation: aurora 20s linear infinite;
+  opacity: 0.6;
+  z-index: 0;
+  pointer-events: none; /* Crucial so clicks go through */
+}
+
+/* Sci-Fi Angled Corners for Chatbot */
+.clip-path-polygon {
+  clip-path: polygon(
+    0 0, 
+    100% 0, 
+    100% 95%, 
+    92% 100%, 
+    0 100%
+  );
+}
+
+/* Glitch Text Effect */
+.glitch-text {
+  position: relative;
+  display: inline-block;
+}
+.glitch-text::before,
+.glitch-text::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000000; /* Needs to match background to hide main text */
+}
+.glitch-text::before {
+  left: 2px;
+  text-shadow: -1px 0 #00e5ff;
+  clip-path: inset(24% 0 29% 0);
+  animation: glitch-anim-1 2.5s infinite linear alternate-reverse;
+}
+.glitch-text::after {
+  left: -2px;
+  text-shadow: -1px 0 #bd00ff;
+  clip-path: inset(85% 0 13% 0);
+  animation: glitch-anim-2 3s infinite linear alternate-reverse;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(10% 0 60% 0); }
+  20% { clip-path: inset(30% 0 10% 0); }
+  40% { clip-path: inset(80% 0 5% 0); }
+  60% { clip-path: inset(10% 0 80% 0); }
+  80% { clip-path: inset(40% 0 20% 0); }
+  100% { clip-path: inset(10% 0 30% 0); }
+}
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 80% 0); }
+  20% { clip-path: inset(80% 0 10% 0); }
+  40% { clip-path: inset(30% 0 50% 0); }
+  60% { clip-path: inset(10% 0 30% 0); }
+  80% { clip-path: inset(50% 0 10% 0); }
+  100% { clip-path: inset(20% 0 60% 0); }
+}
+
+.main-wrapper {
+  background-image: radial-gradient(circle at 50% 0%, rgba(0, 240, 255, 0.03), transparent 50%);
+}
+
+/* Main Content Area Styling */
+.theme-doc-markdown {
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+article {
+  padding: 2rem 1.5rem;
+}
+
+/* --- Sidebar (The Navigation Console) --- */
+.theme-doc-sidebar-container {
+  background-color: rgba(5, 5, 5, 0.6) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.05) !important;
+  backdrop-filter: blur(10px);
+}
+
+.menu__link {
+  color: #a1a1aa; /* Zinc-400 */
+  border-radius: 4px;
+  font-size: 0.9rem;
+  transition: all 0.2s ease;
+}
+
+.menu__link:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* The Active Tab - Neon Glow */
+.menu__link--active {
+  color: #00f0ff !important; /* Neon Cyan */
+  background: rgba(0, 240, 255, 0.08) !important;
+  border-left: 3px solid #00f0ff;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+  border-radius: 0 4px 4px 0; /* Flat left edge */
+}
+
+/* --- Typography (Headers & Body) --- */
+/* Paragraphs */
+.markdown p {
+  line-height: 1.8;
+  margin-bottom: 1.5rem;
+  color: #e4e4e7;
+}
+
+/* Lists */
+.markdown ul,
+.markdown ol {
+  margin: 1.5rem 0;
+  padding-left: 2rem;
+}
+
+.markdown li {
+  margin: 0.75rem 0;
+  color: #e4e4e7;
+  line-height: 1.7;
+}
+
+.markdown li::marker {
+  color: #00f0ff;
+}
+
+/* Emphasis */
+.markdown strong {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.markdown em {
+  color: #bd00ff;
+}
+
+/* H1 - Main Title */
+.markdown h1 {
+  font-size: 3rem;
+  font-weight: 900;
+  letter-spacing: -0.02em;
+  background: linear-gradient(to bottom, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  margin-bottom: 2rem;
+  text-transform: uppercase;
+}
+
+/* H2 - Section Headers (Neon Cyan) */
+.markdown h2 {
+  color: #00f0ff;
+  font-family: 'Inter', sans-serif;
+  font-weight: 700;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.2);
+  padding-bottom: 0.5rem;
+  margin-top: 3rem;
+  text-shadow: 0 0 20px rgba(0, 240, 255, 0.3);
+}
+
+/* H3 - Sub-headers (Neon Purple) */
+.markdown h3 {
+  color: #bd00ff;
+  margin-top: 2rem;
+  font-weight: 600;
+}
+
+/* Breadcrumbs (Top navigation path) */
+.theme-doc-breadcrumbs {
+  margin-bottom: 1.5rem;
+}
+
+.breadcrumbs__item {
+  color: #a1a1aa !important;
+  font-size: 0.9rem;
+}
+
+.breadcrumbs__link {
+  color: #a1a1aa !important;
+  text-decoration: none;
+  transition: all 0.2s ease;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+.breadcrumbs__link:hover {
+  color: #00f0ff !important;
+  background: rgba(0, 240, 255, 0.1);
+}
+
+.breadcrumbs__link--active {
+  color: #00f0ff !important;
+  background: rgba(0, 240, 255, 0.1);
+  font-weight: 600;
+}
+
+.breadcrumbs__item--active .breadcrumbs__link {
+  color: #00f0ff !important;
+}
+
+.breadcrumbs li::before {
+  color: #52525b !important;
+}
+
+/* --- Inline Code --- */
+.markdown code {
+  background: rgba(0, 240, 255, 0.1);
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  color: #00f0ff;
+  padding: 0.2em 0.5em;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'JetBrains Mono', monospace;
+}
+
+/* Links */
+.markdown a {
+  color: #00f0ff;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 240, 255, 0.3);
+  transition: all 0.2s ease;
+}
+
+.markdown a:hover {
+  color: #4dffff;
+  border-bottom-color: #00f0ff;
+  text-shadow: 0 0 8px rgba(0, 240, 255, 0.4);
+}
+
+/* --- Code Blocks (The Terminal) --- */
+.theme-code-block {
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  margin: 2rem 0;
+  overflow: hidden;
+}
+
+/* Force the code block background to be deep black */
+.theme-code-block pre {
+  background-color: #050505 !important;
+  padding: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Code block copy button */
+.theme-code-block button {
+  background: rgba(0, 240, 255, 0.1) !important;
+  border: 1px solid rgba(0, 240, 255, 0.3);
+  color: #00f0ff !important;
+  transition: all 0.2s ease;
+}
+
+.theme-code-block button:hover {
+  background: rgba(0, 240, 255, 0.2) !important;
+  border-color: #00f0ff;
+  transform: scale(1.05);
+}
+
+/* --- Tables --- */
+.markdown table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  background: rgba(9, 9, 11, 0.6);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.markdown thead {
+  background: rgba(0, 240, 255, 0.1);
+  border-bottom: 2px solid #00f0ff;
+}
+
+.markdown th {
+  padding: 1rem;
+  text-align: left;
+  color: #00f0ff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+}
+
+.markdown td {
+  padding: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: #e4e4e7;
+}
+
+.markdown tr:hover {
+  background: rgba(0, 240, 255, 0.03);
+}
+
+/* --- Admonitions (Alert Boxes) --- */
+/* Transform generic alerts into "System Messages" */
+.theme-admonition {
+  border-left: 4px solid;
+  border-radius: 6px;
+  background-color: rgba(255, 255, 255, 0.02) !important; /* Glassy */
+  backdrop-filter: blur(5px);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.alert--info {
+  border-color: #00f0ff !important;
+  background: linear-gradient(90deg, rgba(0,240,255,0.05) 0%, transparent 100%);
+}
+.alert--info .admonition-icon svg {
+  fill: #00f0ff;
+}
+
+.alert--warning, .alert--danger {
+  border-color: #bd00ff !important;
+  background: linear-gradient(90deg, rgba(189,0,255,0.05) 0%, transparent 100%);
+}
+.alert--warning .admonition-icon svg {
+  fill: #bd00ff;
+}
+
+/* --- Blockquotes --- */
+.markdown blockquote {
+  border-left: 4px solid #00f0ff;
+  background: rgba(0, 240, 255, 0.05);
+  padding: 1rem 1.5rem;
+  margin: 2rem 0;
+  border-radius: 0 8px 8px 0;
+  backdrop-filter: blur(5px);
+}
+
+.markdown blockquote p {
+  margin: 0;
+  color: #d4d4d8;
+  font-style: italic;
+}
+
+/* --- Horizontal Rules --- */
+.markdown hr {
+  border: none;
+  height: 1px;
+  background: linear-gradient(to right, transparent, #00f0ff, transparent);
+  margin: 3rem 0;
+}
+
+/* --- Images --- */
+.markdown img {
+  border-radius: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  margin: 2rem auto;
+  display: block;
+  max-width: 100%;
+}
+
+/* --- Pagination (Next/Prev Buttons) --- */
+.pagination-nav__link {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(9, 9, 11, 0.6);
+  border-radius: 12px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.pagination-nav__link:hover {
+  border-color: #00f0ff;
+  background: rgba(0, 240, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 240, 255, 0.15);
+  transform: translateY(-2px);
+}
+
+.pagination-nav__sublabel {
+  color: #71717a; /* Zinc-500 */
+  font-family: monospace;
+  letter-spacing: 0.1em;
+}
+
+.pagination-nav__label {
+  color: #fff;
+  font-weight: 800;
+  font-size: 1.1rem;
+}
+
+/* --- Table of Contents (Right Sidebar) --- */
+.table-of-contents__link {
+  color: #71717a;
+  font-size: 0.85rem;
+}
+.table-of-contents__link:hover,
+.table-of-contents__link--active {
+  color: #00f0ff;
+  text-decoration: none;
+}
+.table-of-contents__link--active {
+  border-left: 2px solid #00f0ff;
+  padding-left: 8px; /* Offset for border */
+}
+
+/* --- Search Bar --- */
+.navbar__search-input {
+  background: rgba(0, 0, 0, 0.5) !important;
+  border: 1px solid rgba(0, 240, 255, 0.3) !important;
+  color: #ffffff !important;
+  border-radius: 8px;
+}
+
+.navbar__search-input:focus {
+  border-color: #00f0ff !important;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.2);
+}
+
+/* --- Buttons --- */
+.button {
+  border-radius: 6px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.button--primary {
+  background: linear-gradient(135deg, #00f0ff, #00d8e6);
+  border: none;
+  color: #000000;
+}
+
+.button--primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(0, 240, 255, 0.3);
+}
+
+.button--secondary {
+  background: transparent;
+  border: 1px solid #00f0ff;
+  color: #00f0ff;
+}
+
+.button--secondary:hover {
+  background: rgba(0, 240, 255, 0.1);
+  border-color: #4dffff;
+}
+
+/* --- Theme Toggle Button (Hidden) --- */
+button[aria-label*="Switch between dark and light mode"],
+.navbar__toggle,
+.clean-btn[title*="Switch between dark and light mode"],
+button[class*="toggleButton"] {
+  display: none !important;
 }
