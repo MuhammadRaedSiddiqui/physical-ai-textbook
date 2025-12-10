@@ -10,7 +10,7 @@
   --ifm-font-family-base: 'Inter', system-ui, -apple-system, sans-serif;
   --ifm-font-family-monospace: 'JetBrains Mono', monospace; /* Hacker terminal code font */
 
-  --ifm-font-size-base: 22px; /* Increased from default 16px */
+  --ifm-font-size-base: 16px; /* Increased from default 16px */
   --ifm-line-height-base: 1.6;
   /* Neon Cyan Primary Scheme */
   --ifm-color-primary: #00f0ff;
@@ -224,6 +224,7 @@ body {
 .theme-doc-markdown {
   max-width: 900px;
   margin: 0 auto;
+  font-size: 20px;
 }
 
 article {
@@ -327,11 +328,19 @@ article {
 /* Breadcrumbs (Top navigation path) */
 .theme-doc-breadcrumbs {
   margin-bottom: 1.5rem;
+  display: flex;
+  
+}
+
+.breadcrumbs {
+  display: flex;
+  justify-content: center;
 }
 
 .breadcrumbs__item {
   color: #a1a1aa !important;
   font-size: 0.9rem;
+  
 }
 
 .breadcrumbs__link {
@@ -357,8 +366,16 @@ article {
   color: #00f0ff !important;
 }
 
+.breadcrumbs__item {
+  display: flex;
+  align-items: center;
+}
+
 .breadcrumbs li::before {
   color: #52525b !important;
+  display: flex;
+  align-items: center;
+  height: 100%;
 }
 
 /* --- Inline Code --- */
