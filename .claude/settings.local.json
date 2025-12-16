@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -ExecutionPolicy Bypass -File:*)",
+      "Bash(yarn add:*)",
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run typecheck:*)",
+      "mcp__chrome-devtools__performance_analyze_insight",
+      "mcp__chrome-devtools__take_snapshot",
+      "mcp__chrome-devtools__navigate_page",
+      "mcp__chrome-devtools__take_screenshot",
+      "mcp__chrome-devtools__performance_start_trace",
+      "mcp__chrome-devtools__emulate",
+      "mcp__chrome-devtools__evaluate_script",
+      "mcp__chrome-devtools__press_key",
+      "Bash(yarn build:*)",
+      "Bash(cat:*)",
+      "Bash(dir /s /b \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\src\")",
+      "Bash(mkdir -p \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\server\")"
+    ]
+  }
+}

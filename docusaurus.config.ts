@@ -9,6 +9,45 @@ const config: Config = {
   tagline: 'From ROS 2 to Vision-Language-Action Models',
   favicon: 'img/favicon.ico',
 
+  // Google Fonts for HUD theme
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.googleapis.com',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'preconnect',
+        href: 'https://fonts.gstatic.com',
+        crossorigin: 'anonymous',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'stylesheet',
+        href: 'https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@400;500;700;900&family=Rajdhani:wght@300;400;500;600;700&display=swap',
+      },
+    },
+  ],
+
+  // Tailwind CSS PostCSS plugin (v4 uses @tailwindcss/postcss)
+  plugins: [
+    async function tailwindPlugin(context, options) {
+      return {
+        name: 'docusaurus-tailwindcss',
+        configurePostCss(postcssOptions) {
+          postcssOptions.plugins.push(require('@tailwindcss/postcss'));
+          return postcssOptions;
+        },
+      };
+    },
+  ],
+
   // Future flags, see https://docusaurus.io/docs/api/docusaurus-config#future
   future: {
     v4: true, // Improve compatibility with the upcoming Docusaurus v4
@@ -59,54 +98,85 @@ const config: Config = {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
     colorMode: {
-      respectPrefersColorScheme: true,
+      defaultMode: 'dark',
+      disableSwitch: false,
+      respectPrefersColorScheme: false,
     },
-    navbar: {
-      title: 'Physical AI & Humanoid Robotics',
-      logo: {
-        alt: 'My Site Logo',
-        src: 'img/logo.svg',
-      },
-      items: [
-        {
-          type: 'docSidebar',
-          sidebarId: 'tutorialSidebar',
-          position: 'left',
-          label: 'Docs',
-        },
-        {
-          href: 'https://github.com/facebook/docusaurus',
-          label: 'GitHub',
-          position: 'right',
-        },
-      ],
-    },
+    // navbar: {
+    //   title: 'Physical AI & Humanoid Robotics',
+    //   logo: {
+    //     alt: 'My Site Logo',
+    //     src: 'img/logo.svg',
+    //   },
+    //   items: [
+    //     {
+    //       type: 'docSidebar',
+    //       sidebarId: 'tutorialSidebar',
+    //       position: 'left',
+    //       label: 'Docs',
+    //     },
+    //     {
+    //       href: 'https://github.com/facebook/docusaurus',
+    //       label: 'GitHub',
+    //       position: 'right',
+    //     },
+    //   ],
+    // },
     footer: {
       style: 'dark',
       links: [
         {
-          title: 'Docs',
+          title: 'ROS 2 Foundations',
           items: [
             {
-              label: 'Docs',
-              to: '/docs/01-module-1-ros2/week-01-intro',
+              label: 'Week 1: Introduction',
+              to: '/docs/module-1-ros2/week-01-intro',
+            },
+            {
+              label: 'Week 2: Architecture',
+              to: '/docs/module-1-ros2/week-02-architecture',
+            },
+            {
+              label: 'Week 3: Communication',
+              to: '/docs/module-1-ros2/week-03-communication',
+            },
+            {
+              label: 'Week 4: Nav2',
+              to: '/docs/module-1-ros2/week-04-nav2',
             },
           ],
         },
         {
-          title: 'Community',
+          title: 'Simulation',
           items: [
             {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
+              label: 'Week 5: Gazebo',
+              to: '/docs/module-2-simulation/week-05-gazebo',
             },
             {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
+              label: 'Week 6: Unity',
+              to: '/docs/module-2-simulation/week-06-unity',
             },
             {
-              label: 'X',
-              href: 'https://x.com/docusaurus',
+              label: 'Week 7: Sim-to-Real',
+              to: '/docs/module-2-simulation/week-07-sim-to-real',
+            },
+          ],
+        },
+        {
+          title: 'NVIDIA & AI',
+          items: [
+            {
+              label: 'Week 8: Isaac Sim',
+              to: '/docs/module-3-nvidia/week-08-isaac-sim',
+            },
+            {
+              label: 'Week 9: RL Gym',
+              to: '/docs/module-3-nvidia/week-09-rl-gym',
+            },
+            {
+              label: 'Week 10: Jetson',
+              to: '/docs/module-3-nvidia/week-10-jetson',
             },
           ],
         },
@@ -115,12 +185,12 @@ const config: Config = {
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/MuhammadRaedSiddiqui/physical-ai-textbook',
             },
           ],
         },
       ],
-      copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+      copyright: `Copyright © ${new Date().getFullYear()} Physical AI & Humanoid Robotics. Built with Docusaurus.`,
     },
     prism: {
       theme: prismThemes.github,
