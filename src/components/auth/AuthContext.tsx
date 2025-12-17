@@ -1,6 +1,7 @@
 /**
  * Authentication Context Provider.
  * Provides authentication state and methods to the entire app.
+ * Uses custom FastAPI JWT authentication backend.
  */
 
 import React, {
@@ -20,7 +21,20 @@ import type {
   UpdateProfileData
 } from './types';
 
-import { authClient } from '../../lib/auth-client';
+import {
+  signup as signupApi,
+  signin as signinApi,
+  signout as signoutApi,
+  getMe,
+  updateMe,
+  getStoredToken,
+  setStoredToken,
+  removeStoredToken,
+  getStoredUser,
+  setStoredUser,
+  removeStoredUser,
+  verifyToken,
+} from './api';
 
 // Create context with undefined default
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -34,92 +48,111 @@ interface AuthProviderProps {
  * Wrap your app with this to enable authentication features.
  */
 export function AuthProvider({ children }: AuthProviderProps) {
-  const { data: session, isPending } = authClient.useSession();
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isActionLoading, setIsActionLoading] = useState(false);
-  
+  const [isLoading, setIsLoading] = useState(true);
+
+  // Initialize auth state from localStorage on mount
   useEffect(() => {
-    if (session?.user) {
-      setUser({
-        id: session.user.id,
-        email: session.user.email,
-        name: session.user.name,
-        is_active: true,
-        is_verified: session.user.emailVerified,
-        software_background: (session.user as any).software_background || null,
-        hardware_background: (session.user as any).hardware_background || null,
-        created_at: session.user.createdAt.toISOString(),
-        updated_at: session.user.updatedAt.toISOString(),
-      });
-      // Better Auth uses cookies, but we can expose the session token if needed
-      // session.session.token might be available depending on config
-      setToken(session.session.token || "cookie-session"); 
-    } else {
-      setUser(null);
-      setToken(null);
-    }
-  }, [session]);
+    const initAuth = async () => {
+      const storedToken = getStoredToken();
+      const storedUser = getStoredUser();
+
+      if (storedToken && storedUser) {
+        // Verify token is still valid
+        try {
+          await verifyToken(storedToken);
+          setToken(storedToken);
+          setUser(storedUser);
+        } catch {
+          // Token invalid, clear storage
+          removeStoredToken();
+          removeStoredUser();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    initAuth();
+  }, []);
 
   const signup = useCallback(async (data: SignupData) => {
-    setIsActionLoading(true);
+    setIsLoading(true);
     try {
-      await authClient.signUp.email({
-        email: data.email,
-        password: data.password,
-        name: data.name || "",
-        // @ts-ignore - custom fields
-        software_background: data.software_background,
-        // @ts-ignore - custom fields
-        hardware_background: data.hardware_background,
-      });
+      const response = await signupApi(data);
+      setToken(response.access_token);
+      setUser(response.user);
+      setStoredToken(response.access_token);
+      setStoredUser(response.user);
     } finally {
-      setIsActionLoading(false);
+      setIsLoading(false);
     }
   }, []);
 
   const signin = useCallback(async (data: LoginData) => {
-    setIsActionLoading(true);
+    setIsLoading(true);
     try {
-      await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-      });
-      // Force reload to ensure session cookie is picked up and UI updates
-      window.location.reload();
-    } catch (error) {
-      setIsActionLoading(false);
-      throw error;
+      const response = await signinApi(data);
+      setToken(response.access_token);
+      setUser(response.user);
+      setStoredToken(response.access_token);
+      setStoredUser(response.user);
+    } finally {
+      setIsLoading(false);
     }
   }, []);
 
   const signout = useCallback(async () => {
-    setIsActionLoading(true);
+    setIsLoading(true);
     try {
-      await authClient.signOut();
-      window.location.reload();
-    } catch (error) {
-      setIsActionLoading(false);
-      throw error;
+      if (token) {
+        await signoutApi(token);
+      }
+    } catch {
+      // Ignore errors on signout
+    } finally {
+      setToken(null);
+      setUser(null);
+      removeStoredToken();
+      removeStoredUser();
+      setIsLoading(false);
     }
-  }, []);
+  }, [token]);
 
   const updateProfile = useCallback(async (data: UpdateProfileData) => {
-    // Better Auth update profile implementation
-    // This might need a custom endpoint or using authClient.updateUser if available
-    // For now, we'll just log it
-    console.log("Update profile not fully implemented with Better Auth yet", data);
-  }, []);
+    if (!token) return;
+
+    setIsLoading(true);
+    try {
+      const updatedUser = await updateMe(data, token);
+      setUser(updatedUser);
+      setStoredUser(updatedUser);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [token]);
 
   const refreshUser = useCallback(async () => {
-    // Session is automatically managed by useSession
-  }, []);
+    if (!token) return;
+
+    try {
+      const freshUser = await getMe(token);
+      setUser(freshUser);
+      setStoredUser(freshUser);
+    } catch {
+      // Token might be invalid
+      setToken(null);
+      setUser(null);
+      removeStoredToken();
+      removeStoredUser();
+    }
+  }, [token]);
 
   const value: AuthContextType = {
     user,
     token,
-    isAuthenticated: !!user,
-    isLoading: isPending || isActionLoading,
+    isAuthenticated: !!user && !!token,
+    isLoading,
     signup,
     signin,
     signout,

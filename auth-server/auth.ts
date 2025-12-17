@@ -26,4 +26,9 @@ export const auth = betterAuth({
     },
   },
   trustedOrigins: [process.env.ALLOWED_ORIGINS || "http://localhost:3000"],
+  advanced: {
+    crossSubDomainCookies: {
+      enabled: true,
+    },
+  },
 });

@@ -1,5 +1,17 @@
-import { createAuthClient } from "better-auth/react";
+/**
+ * Auth client configuration.
+ * This file is kept for backwards compatibility but the app now uses
+ * the custom FastAPI JWT authentication in src/components/auth/api.ts
+ */
 
-export const authClient = createAuthClient({
-  baseURL: "http://localhost:4000", // The URL of your Better Auth server
-});
+// Re-export from the auth module for any code that imports from here
+export {
+  getStoredToken,
+  getStoredUser,
+  signup,
+  signin,
+  signout,
+  getMe,
+  updateMe,
+  verifyToken,
+} from '../components/auth/api';
