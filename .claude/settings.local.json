@@ -17,7 +17,10 @@
       "Bash(yarn build:*)",
       "Bash(cat:*)",
       "Bash(dir /s /b \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\src\")",
-      "Bash(mkdir -p \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\server\")"
+      "Bash(mkdir -p \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\server\")",
+      "Bash(tree:*)",
+      "WebFetch(domain:www.better-auth.com)",
+      "WebSearch"
     ]
   }
 }

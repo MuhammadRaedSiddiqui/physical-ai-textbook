@@ -1,5 +1,6 @@
 # Dependencies
 /node_modules
+**/node_modules
 
 # Production
 /build
@@ -18,5 +19,9 @@
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-"api/.env" 
-nul 
+
+# Environment files (secrets)
+.env
+api/.env
+auth-server/.env
+*.env.local 

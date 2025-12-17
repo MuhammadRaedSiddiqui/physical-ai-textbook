@@ -1,6 +1,7 @@
 import os
 import uvicorn
 import psycopg2
+from contextlib import asynccontextmanager
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,6 +10,9 @@ from qdrant_client import QdrantClient
 from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
+
+# Import authentication module
+from auth import auth_router, create_db_and_tables
 
 # 1. Load Environment Variables
 load_dotenv()
@@ -24,7 +28,26 @@ qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 chat_model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
 
-app = FastAPI(title="Physical AI Textbook Chatbot")
+
+# 3. Lifespan context manager for startup/shutdown events
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    """Handle startup and shutdown events."""
+    # Startup: Create authentication tables
+    print("Creating authentication database tables...")
+    await create_db_and_tables()
+    print("Authentication tables ready!")
+    yield
+    # Shutdown: Cleanup (if needed)
+    print("Shutting down...")
+
+
+app = FastAPI(
+    title="Physical AI Textbook API",
+    description="API for Physical AI & Humanoid Robotics Textbook with RAG chatbot and authentication",
+    version="2.0.0",
+    lifespan=lifespan,
+)
 
 # CORS Middleware
 app.add_middleware(
@@ -35,7 +58,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# 3. Database Functions
+# Include authentication router
+app.include_router(auth_router, prefix="/api")
+
+# 4. Database Functions (for chat history - legacy sync)
 def get_db_connection():
     return psycopg2.connect(NEON_DB_URL)
 
@@ -76,12 +102,12 @@ def save_message(session_id: str, role: str, content: str):
     except Exception as e:
         print(f"DB Error (Save Message): {e}")
 
-# 4. Request Model (Updated to include session_id)
+# 5. Request Model (Updated to include session_id)
 class ChatRequest(BaseModel):
     question: str
     session_id: str  # Unique ID for the user session
 
-# 5. Updated Prompt Template with History
+# 6. Updated Prompt Template with History
 rag_template = """You are an expert teaching assistant for a textbook on Physical AI and Humanoid Robotics.
 Use the retrieved context and chat history to answer the question.
 If the answer is not in the context, say you don't know.
@@ -145,7 +171,17 @@ async def chat_endpoint(request: ChatRequest):
 
 @app.get("/")
 async def root():
-    return {"status": "ok", "message": "Physical AI Brain is running with Memory!"}
+    return {"status": "ok", "message": "Physical AI Brain is running with Memory and Authentication!"}
+
+
+@app.get("/health")
+async def health_check():
+    """Health check endpoint for deployment monitoring."""
+    return {
+        "status": "healthy",
+        "version": "2.0.0",
+        "features": ["chatbot", "authentication", "rag"]
+    }
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=8000)
