@@ -32,10 +32,14 @@ def get_async_database_url() -> str:
     elif not db_url.startswith("postgresql+asyncpg://"):
         db_url = f"postgresql+asyncpg://{db_url}"
 
-    # Add SSL mode for Neon (required for serverless)
-    if "sslmode=" not in db_url:
-        separator = "&" if "?" in db_url else "?"
-        db_url = f"{db_url}{separator}ssl=require"
+    # Remove sslmode and channel_binding params (not supported by asyncpg directly)
+    # SSL is handled via connect_args instead
+    import re
+    db_url = re.sub(r'[?&]sslmode=[^&]*', '', db_url)
+    db_url = re.sub(r'[?&]channel_binding=[^&]*', '', db_url)
+    # Clean up any trailing ? or &
+    db_url = re.sub(r'\?&', '?', db_url)
+    db_url = re.sub(r'\?$', '', db_url)
 
     return db_url
 
@@ -46,6 +50,7 @@ engine = create_async_engine(
     get_async_database_url(),
     poolclass=NullPool,  # Recommended for serverless Postgres
     echo=False,  # Set to True for SQL query logging
+    connect_args={"ssl": "require"},  # Enable SSL for Neon
 )
 
 # Create async session factory
