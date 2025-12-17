@@ -684,12 +684,12 @@ html[data-theme='dark'] body {
 }
 
 .footer__title {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
   color: #ffffff;
   text-transform: uppercase;
   letter-spacing: 1px;
   margin-bottom: 1.5rem;
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
   position: relative;
   padding-bottom: 0.5rem;
@@ -742,7 +742,7 @@ html[data-theme='dark'] body {
   font-weight: 500;
   position: relative;
   display: inline-block;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Rajdhani', sans-serif;
 }
 
 .footer__link-item:hover {

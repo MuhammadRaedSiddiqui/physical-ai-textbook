@@ -123,7 +123,7 @@ export default function Chatbot() {
             ))}
             {isLoading && (
               <div className="message bot">
-                <div className="message-prefix">> SYS</div>
+                <div className="message-prefix">&gt; SYS</div>
                 <div className="message-content pulsing">PROCESSING_QUERY<span className="loading-dots"></span></div>
               </div>
             )}
@@ -173,7 +173,7 @@ export default function Chatbot() {
           cursor: pointer;
           box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.05);
           transition: all 0.3s ease;
-          font-family: 'Orbitron', sans-serif;
+          font-family: 'Rajdhani', sans-serif;
           display: flex;
           align-items: center;
           gap: 10px;

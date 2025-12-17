@@ -102,10 +102,12 @@ const config: Config = {
       disableSwitch: false,
       respectPrefersColorScheme: false,
     },
+    // Navbar is handled by custom CardNav component in src/components/react-bits/CardNav.tsx
+    // The CardNav includes the AuthButton for authentication
     // navbar: {
     //   title: 'Physical AI & Humanoid Robotics',
     //   logo: {
-    //     alt: 'My Site Logo',
+    //     alt: 'Physical AI Logo',
     //     src: 'img/logo.svg',
     //   },
     //   items: [
@@ -113,10 +115,10 @@ const config: Config = {
     //       type: 'docSidebar',
     //       sidebarId: 'tutorialSidebar',
     //       position: 'left',
-    //       label: 'Docs',
+    //       label: 'Curriculum',
     //     },
     //     {
-    //       href: 'https://github.com/facebook/docusaurus',
+    //       href: 'https://github.com/MuhammadRaedSiddiqui/physical-ai-textbook',
     //       label: 'GitHub',
     //       position: 'right',
     //     },

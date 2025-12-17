@@ -1,7 +1,9 @@
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { gsap } from 'gsap';
+import Link from '@docusaurus/Link';
 // use your own icon import if react-icons is not available
 import { GoArrowUpRight } from 'react-icons/go';
+import { AuthButton } from '../auth';
 
 type CardNavLink = {
   label: string;
@@ -161,7 +163,7 @@ const CardNav: React.FC<CardNavProps> = ({
     >
       <nav
         ref={navRef}
-        className={`card-nav ${isExpanded ? 'open' : ''} block h-[60px] p-0 relative overflow-hidden will-change-[height] h-full w-full bg-[#050505]/80 rounded-md bg-clip-padding backdrop-filter backdrop-blur-xl border border-[#00f3ff]/30 shadow-[0_0_20px_rgba(0,243,255,0.1)]`}
+        className={`card-nav ${isExpanded ? 'open' : ''} block h-[60px] p-0 relative overflow-hidden will-change-[height] h-full w-full bg-[#ffffff]/3 rounded-md bg-clip-padding backdrop-filter backdrop-blur-sm backdrop-brightness-150 backdrop-saturate-125 border-none border-[#00f3ff]/30 shadow-[0_0_20px_rgba(0,243,255,0.1)]`}
       >
         <div className="card-nav-top absolute inset-x-0 top-0 h-[60px] flex items-center justify-between p-2 pl-[1.1rem] z-[2]">
           <div
@@ -188,13 +190,17 @@ const CardNav: React.FC<CardNavProps> = ({
             <img src={logo} alt={logoAlt} className="logo h-[28px]" />
           </div>
 
-          <a
-            href="/docs/module-1-ros2/week-01-intro"
-            className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 items-center h-full font-bold cursor-pointer transition-all duration-300 no-underline hover:opacity-90"
-            style={{ backgroundColor: buttonBgColor, color: buttonTextColor, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
-          >
-            Start Learning →
-          </a>
+          {/* Right side: Auth button + Start Learning CTA */}
+          <div className="flex items-center gap-3 order-3">
+            <AuthButton />
+            {/* <Link
+              to="/docs/module-1-ros2/week-01-intro"
+              className="card-nav-cta-button hidden md:inline-flex border-0 rounded-[calc(0.75rem-0.2rem)] px-4 items-center h-full font-bold cursor-pointer transition-all duration-300 no-underline hover:opacity-90"
+              style={{ backgroundColor: buttonBgColor, color: buttonTextColor, fontFamily: 'Inter, sans-serif', fontWeight: 600 }}
+            >
+              Start Learning →
+            </Link> */}
+          </div>
         </div>
 
         <div
@@ -215,16 +221,16 @@ const CardNav: React.FC<CardNavProps> = ({
               </div>
               <div className="nav-card-links mt-auto flex flex-col gap-[2px]">
                 {item.links?.map((lnk, i) => (
-                  <a
+                  <Link
                     key={`${lnk.label}-${i}`}
                     className="nav-card-link inline-flex items-center gap-[6px] no-underline cursor-pointer transition-all duration-300 hover:opacity-75 hover:translate-x-1 text-[14px] md:text-[15px]"
-                    href={lnk.href}
+                    to={lnk.href}
                     aria-label={lnk.ariaLabel}
                     style={{ fontFamily: 'Inter, sans-serif', color: 'inherit', fontWeight: 500 }}
                   >
                     <GoArrowUpRight className="nav-card-link-icon shrink-0" aria-hidden="true" />
                     {lnk.label}
-                  </a>
+                  </Link>
                 ))}
               </div>
             </div>
