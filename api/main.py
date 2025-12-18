@@ -211,6 +211,55 @@ Translation:"""
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# 7b. Batch Translation Endpoint (for faster page translation)
+class BatchTranslateRequest(BaseModel):
+    texts: list[str]
+    target_language: str = "Urdu"
+
+
+@app.post("/translate/batch")
+async def batch_translate_endpoint(request: BatchTranslateRequest):
+    """Translate multiple texts in a single request for better performance."""
+    try:
+        # Join texts with a unique separator
+        separator = "\n---SECTION_BREAK---\n"
+        combined_text = separator.join(request.texts)
+
+        translate_prompt = ChatPromptTemplate.from_template(
+            """Translate each section of the following technical documentation into professional {target_language}.
+Maintain all technical terms (like ROS 2, Nodes, VLA, SLAM, LiDAR, sensors, actuators) in English.
+Keep sections separated by exactly "---SECTION_BREAK---" (preserve this separator in output).
+Keep the translation accurate, clear, and professional.
+
+Sections to translate:
+{text}
+
+Translated sections:"""
+        )
+
+        chain = translate_prompt | chat_model | output_parser
+        translated_combined = chain.invoke({
+            "text": combined_text,
+            "target_language": request.target_language
+        })
+
+        # Split back into individual translations
+        translated_texts = translated_combined.split("---SECTION_BREAK---")
+        translated_texts = [t.strip() for t in translated_texts]
+
+        # Ensure we have the same number of translations as inputs
+        while len(translated_texts) < len(request.texts):
+            translated_texts.append(request.texts[len(translated_texts)])
+
+        return {
+            "translations": translated_texts[:len(request.texts)],
+            "target_language": request.target_language
+        }
+    except Exception as e:
+        print(f"Batch Translation Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 # 8. Personalize Endpoint
 @app.post("/personalize")
 async def personalize_endpoint(request: PersonalizeRequest):
