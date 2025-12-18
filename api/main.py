@@ -72,14 +72,14 @@ def get_chat_history(session_id: str, limit=5):
         cur = conn.cursor()
         # Fetch recent messages
         cur.execute("""
-            SELECT role, content FROM chat_history 
-            WHERE session_id = %s 
-            ORDER BY created_at DESC 
+            SELECT role, content FROM chat_history
+            WHERE session_id = %s
+            ORDER BY created_at DESC
             LIMIT %s
         """, (session_id, limit))
         rows = cur.fetchall()
         conn.close()
-        
+
         # Reverse to chronological order (oldest -> newest) for the AI
         history = rows[::-1]
         formatted_history = "\n".join([f"{role.capitalize()}: {content}" for role, content in history])
@@ -102,10 +102,20 @@ def save_message(session_id: str, role: str, content: str):
     except Exception as e:
         print(f"DB Error (Save Message): {e}")
 
-# 5. Request Model (Updated to include session_id)
+# 5. Request Models
 class ChatRequest(BaseModel):
     question: str
     session_id: str  # Unique ID for the user session
+
+
+class TranslateRequest(BaseModel):
+    text: str
+    target_language: str = "Urdu"
+
+
+class PersonalizeRequest(BaseModel):
+    text: str
+    user_context: str
 
 # 6. Updated Prompt Template with History
 rag_template = """You are an expert teaching assistant for a textbook on Physical AI and Humanoid Robotics.
@@ -144,7 +154,7 @@ async def chat_endpoint(request: ChatRequest):
         ).points
 
         context_text = "\n\n".join([hit.payload["text"] for hit in search_result])
-        
+
         # C. Get History from Neon
         history_text = get_chat_history(session_id)
 
@@ -169,6 +179,73 @@ async def chat_endpoint(request: ChatRequest):
         print(f"Error: {e}")
         raise HTTPException(status_code=500, detail=str(e))
 
+# 7. Translate Endpoint
+@app.post("/translate")
+async def translate_endpoint(request: TranslateRequest):
+    """Translate text to the target language (default: Urdu)."""
+    try:
+        translate_prompt = ChatPromptTemplate.from_template(
+            """Translate the following technical documentation into professional {target_language}.
+Maintain all technical terms (like ROS 2, Nodes, VLA, SLAM, LiDAR, etc.) in English.
+Keep the formatting and structure similar to the original.
+
+Text to translate:
+{text}
+
+Translation:"""
+        )
+
+        chain = translate_prompt | chat_model | output_parser
+        translation = chain.invoke({
+            "text": request.text,
+            "target_language": request.target_language
+        })
+
+        return {
+            "original": request.text,
+            "translated": translation,
+            "target_language": request.target_language
+        }
+    except Exception as e:
+        print(f"Translation Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+# 8. Personalize Endpoint
+@app.post("/personalize")
+async def personalize_endpoint(request: PersonalizeRequest):
+    """Personalize content based on user's background."""
+    try:
+        personalize_prompt = ChatPromptTemplate.from_template(
+            """You are a personalized tutor for a Physical AI and Humanoid Robotics textbook.
+Rewrite the following introduction/summary to be specifically relevant for a student with this background.
+Keep it concise, motivating, and highlight connections to their experience.
+
+Student Background:
+{user_context}
+
+Content to Personalize:
+{text}
+
+Personalized Version:"""
+        )
+
+        chain = personalize_prompt | chat_model | output_parser
+        personalized = chain.invoke({
+            "text": request.text,
+            "user_context": request.user_context
+        })
+
+        return {
+            "original": request.text,
+            "personalized": personalized,
+            "user_context": request.user_context
+        }
+    except Exception as e:
+        print(f"Personalization Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "Physical AI Brain is running with Memory and Authentication!"}
@@ -180,7 +257,7 @@ async def health_check():
     return {
         "status": "healthy",
         "version": "2.0.0",
-        "features": ["chatbot", "authentication", "rag"]
+        "features": ["chatbot", "authentication", "rag", "translate", "personalize"]
     }
 
 if __name__ == "__main__":
