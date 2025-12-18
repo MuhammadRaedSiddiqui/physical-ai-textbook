@@ -31,7 +31,7 @@ qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
 # Using Groq for fast LLM inference (30 req/min free tier)
 chat_model = ChatGroq(
-    model="llama-3.1-70b-versatile",
+    model="llama-3.3-70b-versatile",
     temperature=0.3,
     api_key=GROQ_API_KEY
 )
