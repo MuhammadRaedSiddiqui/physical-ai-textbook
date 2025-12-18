@@ -1,4 +1,5 @@
 import os
+import time
 import uvicorn
 import psycopg2
 from contextlib import asynccontextmanager
@@ -7,7 +8,8 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from qdrant_client import QdrantClient
-from langchain_google_genai import GoogleGenerativeAIEmbeddings, ChatGoogleGenerativeAI
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_groq import ChatGroq
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import StrOutputParser
 
@@ -21,12 +23,40 @@ COLLECTION_NAME = "physical_ai_textbook"
 QDRANT_URL = os.getenv("QDRANT_URL")
 QDRANT_API_KEY = os.getenv("QDRANT_API_KEY")
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-NEON_DB_URL = os.getenv("NEON_DB_URL")  # Ensure this is in your .env file!
+GROQ_API_KEY = os.getenv("GROQ_API_KEY")
+NEON_DB_URL = os.getenv("NEON_DB_URL")
 
 # 2. Initialize Clients
 qdrant_client = QdrantClient(url=QDRANT_URL, api_key=QDRANT_API_KEY)
 embedding_model = GoogleGenerativeAIEmbeddings(model="models/text-embedding-004")
-chat_model = ChatGoogleGenerativeAI(model="gemini-2.5-flash", temperature=0.3)
+# Using Groq for fast LLM inference (30 req/min free tier)
+chat_model = ChatGroq(
+    model="llama-3.1-70b-versatile",
+    temperature=0.3,
+    api_key=GROQ_API_KEY
+)
+
+
+# Helper: Invoke with retry for rate limits
+def invoke_with_retry(chain, params, max_retries=3):
+    """Invoke a chain with exponential backoff for rate limit errors."""
+    for attempt in range(max_retries):
+        try:
+            return chain.invoke(params)
+        except Exception as e:
+            error_str = str(e)
+            if "429" in error_str or "RESOURCE_EXHAUSTED" in error_str:
+                wait_time = (2 ** attempt) * 5  # 5s, 10s, 20s
+                print(f"Rate limited, waiting {wait_time}s before retry {attempt + 1}/{max_retries}")
+                time.sleep(wait_time)
+                if attempt == max_retries - 1:
+                    raise HTTPException(
+                        status_code=429,
+                        detail=f"API rate limit exceeded. Please try again in {wait_time} seconds."
+                    )
+            else:
+                raise e
+    raise HTTPException(status_code=500, detail="Max retries exceeded")
 
 
 # 3. Lifespan context manager for startup/shutdown events
@@ -196,7 +226,7 @@ Translation:"""
         )
 
         chain = translate_prompt | chat_model | output_parser
-        translation = chain.invoke({
+        translation = invoke_with_retry(chain, {
             "text": request.text,
             "target_language": request.target_language
         })
@@ -238,7 +268,7 @@ Translated sections:"""
         )
 
         chain = translate_prompt | chat_model | output_parser
-        translated_combined = chain.invoke({
+        translated_combined = invoke_with_retry(chain, {
             "text": combined_text,
             "target_language": request.target_language
         })
@@ -280,7 +310,7 @@ Personalized Version:"""
         )
 
         chain = personalize_prompt | chat_model | output_parser
-        personalized = chain.invoke({
+        personalized = invoke_with_retry(chain, {
             "text": request.text,
             "user_context": request.user_context
         })
