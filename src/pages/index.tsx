@@ -1,13 +1,16 @@
 import type { ReactNode } from 'react';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import Link from '@docusaurus/Link';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import Layout from '@theme/Layout';
 import BrowserOnly from '@docusaurus/BrowserOnly';
+import { useInView } from 'react-intersection-observer';
+import { motion } from 'framer-motion';
 import { CardSwap, DecryptedText, GridScan, SpotlightCard, ClickSpark } from '../components/react-bits';
 import { CardIcons } from '../components/react-bits/icons';
 import { Card } from '../components/react-bits/CardSwap';
 import CardNav from '../components/react-bits/CardNav';
+import { useChatContext } from '../context/ChatContext';
 
 
 
@@ -139,7 +142,7 @@ function CapstoneShowcase() {
     },
     {
       title: 'Photorealistic Isaac Sim',
-      description: 'Leverage NVIDIA’s GPU-accelerated Isaac Sim for advanced AI training, domain randomization, and high-fidelity rendering.',
+      description: "Leverage NVIDIA's GPU-accelerated Isaac Sim for advanced AI training, domain randomization, and high-fidelity rendering.",
       icon: CardIcons[1],
       color: '#00f3ff',
       gradient: 'linear-gradient(135deg, #050505 0%, #0a1820 100%)',
@@ -267,8 +270,93 @@ function ModulesSection() {
   );
 }
 
+// Chat Trigger Section with IntersectionObserver for morphing chatbot
+function ChatTriggerSection() {
+  const { setIsEmbedded, registerEmbeddedContainer } = useChatContext();
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  const { ref, inView } = useInView({
+    threshold: 0.5, // Trigger when 50% visible
+    triggerOnce: false,
+  });
+
+  // Register the container ref with the context
+  useEffect(() => {
+    if (containerRef.current) {
+      registerEmbeddedContainer(containerRef as React.RefObject<HTMLDivElement>);
+    }
+  }, [registerEmbeddedContainer]);
+
+  // Update embedded state based on visibility
+  useEffect(() => {
+    setIsEmbedded(inView);
+  }, [inView, setIsEmbedded]);
+
+  return (
+    <section
+      ref={ref}
+      className="min-h-screen flex flex-col items-center justify-center py-20 px-4 relative"
+      style={{
+        background: 'linear-gradient(180deg, #050505 0%, #0a1820 50%, #050505 100%)',
+      }}
+    >
+      {/* Section Header */}
+      <motion.div
+        className="text-center mb-12"
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: inView ? 1 : 0.3, y: inView ? 0 : 30 }}
+        transition={{ duration: 0.6, ease: 'easeOut' }}
+      >
+        <h2
+          className="text-3xl md:text-5xl font-bold mb-4"
+          style={{ fontFamily: 'Orbitron, sans-serif', color: '#00f3ff' }}
+        >
+          AI Teaching Assistant
+        </h2>
+        <p
+          className="text-lg md:text-xl max-w-2xl mx-auto"
+          style={{ fontFamily: 'Rajdhani, sans-serif', color: '#a0a0a0' }}
+        >
+          Get instant help with Physical AI concepts, ROS 2, simulation, and more.
+          Your personal tutor is ready to assist.
+        </p>
+      </motion.div>
+
+      {/* Embedded Chatbot Container - The chatbot will portal into this */}
+      <motion.div
+        ref={containerRef}
+        className="w-full max-w-3xl mx-auto"
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: inView ? 1 : 0, scale: inView ? 1 : 0.9 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        style={{ height: '550px' }}
+      />
+
+      {/* Decorative elements */}
+      <div
+        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 text-xs"
+        style={{ color: '#00f3ff', opacity: 0.5, fontFamily: 'JetBrains Mono, monospace' }}
+      >
+        SCROLL_ACTIVATED // CHAT_INTERFACE
+      </div>
+
+      {/* Glow effect behind chatbot */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: inView
+            ? 'radial-gradient(ellipse at 50% 60%, rgba(0, 243, 255, 0.08) 0%, transparent 60%)'
+            : 'none',
+          transition: 'background 0.5s ease',
+        }}
+      />
+    </section>
+  );
+}
+
 export default function Home(): ReactNode {
   const { siteConfig } = useDocusaurusContext();
+
   return (
     <Layout
       title={siteConfig.title}
@@ -295,6 +383,9 @@ export default function Home(): ReactNode {
         <main className="bg-[#050505]">
           <CapstoneShowcase />
           {/* <ModulesSection /> */}
+          <BrowserOnly>
+            {() => <ChatTriggerSection />}
+          </BrowserOnly>
         </main>
       </ClickSpark>
     </Layout>

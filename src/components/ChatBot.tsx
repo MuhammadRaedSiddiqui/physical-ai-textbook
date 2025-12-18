@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import clsx from 'clsx';
-import { v4 as uuidv4 } from 'uuid';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useChatContext } from '../context/ChatContext';
 
 // Simple types for our messages
 type Message = {
@@ -10,6 +12,8 @@ type Message = {
 };
 
 export default function Chatbot() {
+  const { isEmbedded, embeddedContainerRef } = useChatContext();
+
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
     { role: 'bot', text: 'SYSTEM_INITIALIZED // Ask me anything about Physical AI & Robotics.' }
@@ -18,12 +22,22 @@ export default function Chatbot() {
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const [sessionId, setSessionId] = useState('');
+  const prevEmbeddedRef = useRef(isEmbedded);
+
+  // Close chatbot when transitioning between embedded and floating modes
+  useEffect(() => {
+    // Detect mode change (embedded <-> floating)
+    if (prevEmbeddedRef.current !== isEmbedded) {
+      setIsOpen(false); // Close the chat window during transition
+      prevEmbeddedRef.current = isEmbedded;
+    }
+  }, [isEmbedded]);
 
   useEffect(() => {
     // Check if session ID exists in local storage
     let storedSession = localStorage.getItem('chat_session_id');
     if (!storedSession) {
-      storedSession = crypto.randomUUID(); // Browser native UUID or use 'uuid' package
+      storedSession = crypto.randomUUID();
       localStorage.setItem('chat_session_id', storedSession);
     }
     setSessionId(storedSession);
@@ -43,175 +57,382 @@ export default function Chatbot() {
     setIsLoading(true);
 
     try {
-      // 🚀 Connects to your local Python/FastAPI backend
-      const response = await fetch('https://physical-ai-textbook.onrender.com/chat', { 
+      const response = await fetch('https://physical-ai-textbook.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-            question: userMessage,
-            session_id: sessionId // <--- SEND THIS
+        body: JSON.stringify({
+          question: userMessage,
+          session_id: sessionId
         }),
       });
 
       if (!response.ok) throw new Error('Network response was not ok');
 
       const data = await response.json();
-      
-      setMessages(prev => [...prev, { 
-        role: 'bot', 
+
+      setMessages(prev => [...prev, {
+        role: 'bot',
         text: data.answer,
-        sources: data.sources 
+        sources: data.sources
       }]);
     } catch (error) {
       console.error(error);
-      setMessages(prev => [...prev, { role: 'bot', text: '⚠️ CONNECTION_FAILED // Backend server unreachable.' }]);
+      setMessages(prev => [...prev, { role: 'bot', text: '⚠ CONNECTION_FAILED // Backend server unreachable.' }]);
     } finally {
       setIsLoading(false);
     }
   };
 
-  return (
-    <div className="chatbot-wrapper">
-      {/* 1. Toggle Button */}
-      {!isOpen && (
-        <button className="chatbot-toggle" onClick={() => setIsOpen(true)}>
-          <span className="toggle-icon">◈</span>
-          <span className="toggle-text">AI_TUTOR</span>
-          <span className="toggle-status"></span>
-        </button>
-      )}
+  const toggleVariants = {
+    hidden: { opacity: 0, scale: 0.5 },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: 'spring' as const,
+        stiffness: 400,
+        damping: 20,
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.5,
+      transition: { duration: 0.15 }
+    }
+  };
 
-      {/* 2. Chat Window */}
-      {isOpen && (
-        <div className="chatbot-window">
-          {/* HUD Corner Decorations */}
-          <div className="corner corner-tl"></div>
-          <div className="corner corner-tr"></div>
-          <div className="corner corner-bl"></div>
-          <div className="corner corner-br"></div>
-          
-          {/* Scanline Effect */}
-          <div className="scanline"></div>
+  const windowVariants = {
+    hidden: {
+      opacity: 0,
+      scale: 0.8,
+    },
+    visible: {
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: 'spring' as const,
+        stiffness: 300,
+        damping: 25,
+      }
+    },
+    exit: {
+      opacity: 0,
+      scale: 0.8,
+      transition: {
+        duration: 0.2,
+      }
+    }
+  };
 
-          <div className="chatbot-header">
-            <div className="header-left">
-              <span className="status-dot"></span>
-              <span className="header-title">AI_TEACHING_ASSISTANT</span>
-            </div>
-            <div className="header-right">
-              <span className="header-version">v2.0</span>
-              <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
-            </div>
-          </div>
+  // Chat window content - shared between both modes
+  const chatWindowContent = (
+    <motion.div
+      className={clsx('chatbot-window', { 'embedded': isEmbedded })}
+      variants={windowVariants}
+      initial="hidden"
+      animate="visible"
+      exit="exit"
+      layout
+      layoutId="chatbot-window"
+    >
+      {/* HUD Corner Decorations */}
+      <div className="corner corner-tl"></div>
+      <div className="corner corner-tr"></div>
+      <div className="corner corner-bl"></div>
+      <div className="corner corner-br"></div>
 
-          <div className="chatbot-messages">
-            {messages.map((msg, idx) => (
-              <div key={idx} className={clsx('message', msg.role)}>
-                <div className="message-prefix">{msg.role === 'user' ? '> USER' : '> SYS'}</div>
-                <div className="message-content">{msg.text}</div>
-                {msg.sources && msg.sources.length > 0 && (
-                  <div className="message-sources">
-                    <small>// SOURCES_REFERENCED:</small>
-                    <ul>
-                      {msg.sources.map((src, i) => (
-                        <li key={i}>→ {src.split('/').pop()}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </div>
-            ))}
-            {isLoading && (
-              <div className="message bot">
-                <div className="message-prefix">&gt; SYS</div>
-                <div className="message-content pulsing">PROCESSING_QUERY<span className="loading-dots"></span></div>
+      {/* Scanline Effect */}
+      <div className="scanline"></div>
+
+      <div className="chatbot-header">
+        <div className="header-left">
+          <span className="status-dot"></span>
+          <span className="header-title">AI_TEACHING_ASSISTANT</span>
+        </div>
+        <div className="header-right">
+          <span className="header-version">v2.0</span>
+          {!isEmbedded && (
+            <button className="close-btn" onClick={() => setIsOpen(false)}>✕</button>
+          )}
+        </div>
+      </div>
+
+      <div className="chatbot-messages">
+        {messages.map((msg, idx) => (
+          <motion.div
+            key={idx}
+            className={clsx('message', msg.role)}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: idx * 0.05 }}
+          >
+            <div className="message-prefix">{msg.role === 'user' ? '> USER' : '> SYS'}</div>
+            <div className="message-content">{msg.text}</div>
+            {msg.sources && msg.sources.length > 0 && (
+              <div className="message-sources">
+                <small>// SOURCES_REFERENCED:</small>
+                <ul>
+                  {msg.sources.map((src, i) => (
+                    <li key={i}>→ {src.split('/').pop()}</li>
+                  ))}
+                </ul>
               </div>
             )}
-            <div ref={messagesEndRef} />
-          </div>
+          </motion.div>
+        ))}
+        {isLoading && (
+          <motion.div
+            className="message bot"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            <div className="message-prefix">&gt; SYS</div>
+            <div className="message-content pulsing">PROCESSING_QUERY<span className="loading-dots"></span></div>
+          </motion.div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          <div className="chatbot-input-area">
-            <div className="input-prefix">&gt;</div>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
-              placeholder="Enter query..."
-              disabled={isLoading}
-            />
-            <button onClick={sendMessage} disabled={isLoading}>
-              {isLoading ? '...' : 'EXEC'}
-            </button>
-          </div>
-          
-          <div className="chatbot-footer">
-            <span>GEMINI_POWERED</span>
-            <span>SESSION: {sessionId.slice(0, 8)}</span>
-          </div>
+      <div className="chatbot-input-area">
+        <div className="input-prefix">&gt;</div>
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          onKeyDown={(e) => e.key === 'Enter' && sendMessage()}
+          placeholder="Enter query..."
+          disabled={isLoading}
+        />
+        <button onClick={sendMessage} disabled={isLoading}>
+          {isLoading ? '...' : 'EXEC'}
+        </button>
+      </div>
+
+      <div className="chatbot-footer">
+        <span>GROQ_POWERED</span>
+        <span>SESSION: {sessionId.slice(0, 8)}</span>
+      </div>
+    </motion.div>
+  );
+
+  // Render embedded version via portal if container exists and is embedded
+  const renderEmbedded = isEmbedded && embeddedContainerRef.current;
+
+  return (
+    <>
+      {/* Fixed floating wrapper - only when not embedded */}
+      {!isEmbedded && (
+        <div className="chatbot-wrapper chatbot-fixed">
+          {/* Toggle Button */}
+          <AnimatePresence mode="wait">
+            {!isOpen && (
+              <motion.button
+                className="chatbot-toggle"
+                onClick={() => setIsOpen(true)}
+                aria-label="Open AI Tutor"
+                variants={toggleVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <span className="toggle-status"></span>
+                <svg className="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.55 3.35 17L2 22L7 20.65C8.45 21.5 10.15 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                  <circle cx="8" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+                  <circle cx="16" cy="12" r="1.5" fill="currentColor"/>
+                </svg>
+              </motion.button>
+            )}
+          </AnimatePresence>
+
+          {/* Chat Window - Fixed Mode */}
+          <AnimatePresence mode="wait">
+            {isOpen && chatWindowContent}
+          </AnimatePresence>
         </div>
       )}
 
-      {/* 3. Embedded Styles */}
+      {/* Embedded version via portal */}
+      {renderEmbedded && createPortal(
+        <div className="chatbot-wrapper chatbot-embedded">
+          {/* Toggle Button for embedded mode */}
+          <AnimatePresence mode="wait">
+            {!isOpen && (
+              <motion.div
+                className="embedded-toggle-wrapper"
+                variants={toggleVariants}
+                initial="hidden"
+                animate="visible"
+                exit="exit"
+              >
+                <motion.button
+                  className="chatbot-toggle chatbot-toggle-embedded"
+                  onClick={() => setIsOpen(true)}
+                  aria-label="Open AI Tutor"
+                >
+                  <span className="toggle-status"></span>
+                  <svg className="toggle-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 2C6.48 2 2 6.48 2 12C2 13.85 2.5 15.55 3.35 17L2 22L7 20.65C8.45 21.5 10.15 22 12 22C17.52 22 22 17.52 22 12C22 6.48 17.52 2 12 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <circle cx="8" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="1.5" fill="currentColor"/>
+                    <circle cx="16" cy="12" r="1.5" fill="currentColor"/>
+                  </svg>
+                </motion.button>
+                <span className="embedded-toggle-label">Click to chat with AI Tutor</span>
+              </motion.div>
+            )}
+          </AnimatePresence>
+
+          {/* Chat Window for embedded mode */}
+          <AnimatePresence mode="wait">
+            {isOpen && chatWindowContent}
+          </AnimatePresence>
+        </div>,
+        embeddedContainerRef.current
+      )}
+
+      {/* Styles */}
       <style>{`
         .chatbot-wrapper {
+          font-family: 'Rajdhani', sans-serif;
+        }
+
+        .chatbot-fixed {
           position: fixed;
           bottom: 20px;
           right: 20px;
           z-index: 9999;
-          font-family: 'Rajdhani', sans-serif;
         }
-        
-        /* Toggle Button */
-        .chatbot-toggle {
-          background: rgba(5, 5, 5, 0.95);
-          color: #00f3ff;
-          border: 1px solid #00f3ff;
-          padding: 14px 24px;
-          border-radius: 4px;
-          font-weight: bold;
-          cursor: pointer;
-          box-shadow: 0 0 20px rgba(0, 243, 255, 0.3), inset 0 0 20px rgba(0, 243, 255, 0.05);
-          transition: all 0.3s ease;
-          font-family: 'Rajdhani', sans-serif;
+
+        .chatbot-embedded {
+          width: 100%;
+          height: 100%;
+          position: relative;
           display: flex;
           align-items: center;
-          gap: 10px;
-          backdrop-filter: blur(10px);
+          justify-content: center;
+        }
+
+        .embedded-toggle-wrapper {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 20px;
+        }
+
+        .chatbot-toggle-embedded {
+          width: 80px;
+          height: 80px;
+        }
+
+        .chatbot-toggle-embedded .toggle-icon {
+          width: 36px;
+          height: 36px;
+        }
+
+        .chatbot-toggle-embedded .toggle-status {
+          width: 14px;
+          height: 14px;
+          top: 4px;
+          right: 4px;
+        }
+
+        .embedded-toggle-label {
+          font-family: 'Rajdhani', sans-serif;
+          font-size: 16px;
+          color: #00f3ff;
+          opacity: 0.8;
           text-transform: uppercase;
           letter-spacing: 2px;
-          font-size: 12px;
+          animation: labelPulse 2s ease-in-out infinite;
         }
-        .toggle-icon {
-          font-size: 16px;
-          animation: iconPulse 2s infinite;
-        }
-        .toggle-status {
-          width: 8px;
-          height: 8px;
-          background: #00ff88;
-          border-radius: 50%;
-          box-shadow: 0 0 10px #00ff88;
-          animation: statusBlink 1.5s infinite;
-        }
-        @keyframes iconPulse {
-          0%, 100% { opacity: 1; }
+
+        @keyframes labelPulse {
+          0%, 100% { opacity: 0.8; }
           50% { opacity: 0.5; }
         }
+
+        /* Toggle Button - Circle */
+        .chatbot-toggle {
+          width: 60px;
+          height: 60px;
+          background: rgba(5, 5, 5, 0.95);
+          color: #00f3ff;
+          border: 2px solid #00f3ff;
+          border-radius: 50%;
+          cursor: pointer;
+          box-shadow:
+            0 0 25px rgba(0, 243, 255, 0.4),
+            0 0 50px rgba(0, 243, 255, 0.2),
+            inset 0 0 20px rgba(0, 243, 255, 0.1);
+          transition: all 0.3s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          backdrop-filter: blur(10px);
+          position: relative;
+          overflow: visible;
+        }
+        .toggle-icon {
+          width: 28px;
+          height: 28px;
+          animation: iconFloat 3s ease-in-out infinite;
+        }
+        .toggle-status {
+          position: absolute;
+          top: 2px;
+          right: 2px;
+          width: 12px;
+          height: 12px;
+          background: #00ff88;
+          border-radius: 50%;
+          box-shadow: 0 0 12px #00ff88, 0 0 20px rgba(0, 255, 136, 0.5);
+          animation: statusBlink 1.5s infinite;
+          border: 2px solid rgba(5, 5, 5, 0.95);
+        }
+        @keyframes iconFloat {
+          0%, 100% { transform: translateY(0); }
+          50% { transform: translateY(-2px); }
+        }
         @keyframes statusBlink {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.3; }
+          0%, 100% { opacity: 1; box-shadow: 0 0 12px #00ff88, 0 0 20px rgba(0, 255, 136, 0.5); }
+          50% { opacity: 0.6; box-shadow: 0 0 8px #00ff88, 0 0 12px rgba(0, 255, 136, 0.3); }
         }
         .chatbot-toggle:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 0 30px rgba(0, 243, 255, 0.5), inset 0 0 30px rgba(0, 243, 255, 0.1);
+          transform: scale(1.1);
+          box-shadow:
+            0 0 35px rgba(0, 243, 255, 0.6),
+            0 0 70px rgba(0, 243, 255, 0.3),
+            inset 0 0 30px rgba(0, 243, 255, 0.15);
           border-color: #00f3ff;
         }
-        
+        .chatbot-toggle:hover .toggle-icon {
+          animation: none;
+          transform: scale(1.1);
+        }
+        .chatbot-toggle:active {
+          transform: scale(0.95);
+        }
+
+        /* Pulse ring animation */
+        .chatbot-toggle::before {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border-radius: 50%;
+          border: 2px solid #00f3ff;
+          animation: pulseRing 2s ease-out infinite;
+          pointer-events: none;
+        }
+        @keyframes pulseRing {
+          0% { transform: scale(1); opacity: 0.8; }
+          100% { transform: scale(1.5); opacity: 0; }
+        }
+
         /* Chat Window */
         .chatbot-window {
-          width: 400px;
-          height: 550px;
           background: rgba(5, 5, 5, 0.98);
           border: 1px solid #00f3ff;
           border-radius: 8px;
@@ -222,7 +443,23 @@ export default function Chatbot() {
           backdrop-filter: blur(15px);
           position: relative;
         }
-        
+
+        .chatbot-fixed .chatbot-window {
+          width: 400px;
+          height: 550px;
+        }
+
+        .chatbot-window.embedded {
+          width: 100%;
+          height: 100%;
+          min-height: 500px;
+          border-radius: 16px;
+          box-shadow:
+            0 0 60px rgba(0, 243, 255, 0.3),
+            0 0 120px rgba(0, 243, 255, 0.15),
+            inset 0 0 60px rgba(0, 243, 255, 0.05);
+        }
+
         /* HUD Corners */
         .corner {
           position: absolute;
@@ -237,7 +474,12 @@ export default function Chatbot() {
         .corner-tr { top: 4px; right: 4px; border-width: 2px 2px 0 0; }
         .corner-bl { bottom: 4px; left: 4px; border-width: 0 0 2px 2px; }
         .corner-br { bottom: 4px; right: 4px; border-width: 0 2px 2px 0; }
-        
+
+        .chatbot-window.embedded .corner {
+          width: 30px;
+          height: 30px;
+        }
+
         /* Scanline Effect */
         .scanline {
           position: absolute;
@@ -256,7 +498,7 @@ export default function Chatbot() {
           90% { opacity: 1; }
           100% { top: 100%; opacity: 0; }
         }
-        
+
         /* Header */
         .chatbot-header {
           background: linear-gradient(180deg, rgba(0, 243, 255, 0.15) 0%, rgba(0, 243, 255, 0.05) 100%);
@@ -311,7 +553,7 @@ export default function Chatbot() {
           border-color: #ff4444;
           color: #ff4444;
         }
-        
+
         /* Messages */
         .chatbot-messages {
           flex: 1;
@@ -338,7 +580,7 @@ export default function Chatbot() {
           background: #00f3ff;
           border-radius: 2px;
         }
-        
+
         .message {
           max-width: 90%;
           padding: 10px 14px;
@@ -392,7 +634,7 @@ export default function Chatbot() {
           opacity: 0.8;
           padding: 2px 0;
         }
-        
+
         /* Loading */
         .pulsing {
           animation: pulse 1s infinite;
@@ -411,7 +653,7 @@ export default function Chatbot() {
           50% { content: '..'; }
           75% { content: '...'; }
         }
-        
+
         /* Input Area */
         .chatbot-input-area {
           padding: 12px 16px;
@@ -471,7 +713,7 @@ export default function Chatbot() {
           border-color: #333;
           color: #333;
         }
-        
+
         /* Footer */
         .chatbot-footer {
           padding: 8px 16px;
@@ -487,6 +729,6 @@ export default function Chatbot() {
           letter-spacing: 1px;
         }
       `}</style>
-    </div>
+    </>
   );
 }
