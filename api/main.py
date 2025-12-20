@@ -1,5 +1,7 @@
 import os
 import time
+import json
+import re
 import uvicorn
 import psycopg2
 from contextlib import asynccontextmanager
@@ -146,6 +148,11 @@ class TranslateRequest(BaseModel):
 class PersonalizeRequest(BaseModel):
     text: str
     user_context: str
+
+
+class QuizRequest(BaseModel):
+    topic: str
+    context: str = ""
 
 # 6. Updated Prompt Template with History
 rag_template = """You are an expert teaching assistant for a textbook on Physical AI and Humanoid Robotics.
@@ -325,6 +332,109 @@ Personalized Version:"""
         raise HTTPException(status_code=500, detail=str(e))
 
 
+# 9. Quiz Generation Endpoint
+@app.post("/quiz")
+async def quiz_endpoint(request: QuizRequest):
+    """Generate a 3-question multiple choice quiz on a given topic."""
+    try:
+        quiz_prompt = ChatPromptTemplate.from_template(
+            """You are a Robotics Professor creating an assessment quiz for students studying Physical AI and Humanoid Robotics.
+
+Generate a 3-question Multiple Choice Quiz about: {topic}
+
+{context_section}
+
+IMPORTANT: You MUST return ONLY a raw JSON array with NO markdown formatting, NO code blocks, NO backticks.
+Return EXACTLY this structure (replace the example content with actual quiz questions):
+
+[
+  {{
+    "question": "Your first question here?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct_index": 0,
+    "explanation": "Brief explanation of why this answer is correct."
+  }},
+  {{
+    "question": "Your second question here?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct_index": 1,
+    "explanation": "Brief explanation of why this answer is correct."
+  }},
+  {{
+    "question": "Your third question here?",
+    "options": ["Option A", "Option B", "Option C", "Option D"],
+    "correct_index": 2,
+    "explanation": "Brief explanation of why this answer is correct."
+  }}
+]
+
+Rules:
+- Each question should test understanding, not just memorization
+- Options should be plausible but only one correct
+- correct_index is 0-based (0 for first option, 1 for second, etc.)
+- Explanations should be educational and concise
+- Return ONLY the JSON array, nothing else"""
+        )
+
+        # Build context section if provided
+        context_section = ""
+        if request.context:
+            context_section = f"Use this context to generate relevant questions:\n{request.context}"
+
+        chain = quiz_prompt | chat_model | output_parser
+        raw_response = invoke_with_retry(chain, {
+            "topic": request.topic,
+            "context_section": context_section
+        })
+
+        # Clean the response - remove markdown code blocks if present
+        cleaned_response = raw_response.strip()
+
+        # Remove ```json and ``` wrappers
+        cleaned_response = re.sub(r'^```json\s*', '', cleaned_response)
+        cleaned_response = re.sub(r'^```\s*', '', cleaned_response)
+        cleaned_response = re.sub(r'\s*```$', '', cleaned_response)
+        cleaned_response = cleaned_response.strip()
+
+        # Parse JSON
+        try:
+            quiz_data = json.loads(cleaned_response)
+        except json.JSONDecodeError as json_err:
+            print(f"JSON Parse Error: {json_err}")
+            print(f"Raw response: {raw_response}")
+            raise HTTPException(
+                status_code=500,
+                detail="Failed to parse quiz data from AI response"
+            )
+
+        # Validate quiz structure
+        if not isinstance(quiz_data, list) or len(quiz_data) == 0:
+            raise HTTPException(
+                status_code=500,
+                detail="Invalid quiz format: expected non-empty array"
+            )
+
+        for i, q in enumerate(quiz_data):
+            if not all(key in q for key in ["question", "options", "correct_index", "explanation"]):
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Question {i+1} missing required fields"
+                )
+            if not isinstance(q["options"], list) or len(q["options"]) != 4:
+                raise HTTPException(
+                    status_code=500,
+                    detail=f"Question {i+1} must have exactly 4 options"
+                )
+
+        return {"quiz": quiz_data}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        print(f"Quiz Generation Error: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/")
 async def root():
     return {"status": "ok", "message": "Physical AI Brain is running with Memory and Authentication!"}
@@ -336,7 +446,7 @@ async def health_check():
     return {
         "status": "healthy",
         "version": "2.0.0",
-        "features": ["chatbot", "authentication", "rag", "translate", "personalize"]
+        "features": ["chatbot", "authentication", "rag", "translate", "personalize", "quiz"]
     }
 
 if __name__ == "__main__":
