@@ -20,7 +20,19 @@
       "Bash(mkdir -p \"C:\\Users\\HP\\OneDrive\\Desktop\\hackathon\\physical-ai-textbook\\server\")",
       "Bash(tree:*)",
       "WebFetch(domain:www.better-auth.com)",
-      "WebSearch"
+      "WebSearch",
+      "Bash(if not exist \"C:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\hackathon\\\\physical-ai-textbook\\\\.claude\\\\commands\" mkdir \"C:\\\\Users\\\\HP\\\\OneDrive\\\\Desktop\\\\hackathon\\\\physical-ai-textbook\\\\.claude\\\\commands\")",
+      "Bash(curl:*)",
+      "Bash(python:*)",
+      "Bash(timeout:*)",
+      "Bash(ping:*)",
+      "Bash(pip install:*)",
+      "Bash(where:*)",
+      "Bash(\"C:\\\\Users\\\\HP\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" main.py)",
+      "Bash(\"C:\\\\Users\\\\HP\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -c \"\nimport json\n\n# Simulate what the quiz endpoint should return\nmock_quiz_response = {\n    ''quiz'': [\n        {\n            ''question'': ''What is a ROS 2 Node?'',\n            ''options'': [\n                ''A fundamental building block that performs computation'',\n                ''A physical robot part'',\n                ''A type of sensor'',\n                ''A networking protocol''\n            ],\n            ''correct_index'': 0,\n            ''explanation'': ''In ROS 2, nodes are the fundamental building blocks for computation. Each node performs a specific task.''\n        },\n        {\n            ''question'': ''How do ROS 2 nodes communicate with each other?'',\n            ''options'': [\n                ''Direct memory access'',\n                ''File system'',\n                ''Topics and Services'',\n                ''HTTP requests''\n            ],\n            ''correct_index'': 2,\n            ''explanation'': ''ROS 2 nodes communicate using Topics \\(pub/sub messaging\\) and Services \\(request/response\\).''\n        },\n        {\n            ''question'': ''What is the default middleware used by ROS 2?'',\n            ''options'': [\n                ''MQTT'',\n                ''DDS \\(Data Distribution Service\\)'',\n                ''ZeroMQ'',\n                ''gRPC''\n            ],\n            ''correct_index'': 1,\n            ''explanation'': ''ROS 2 uses DDS \\(Data Distribution Service\\) as its default middleware for communication.''\n        }\n    ]\n}\n\nprint\\(''Quiz Endpoint Response Structure Test''\\)\nprint\\(''='' * 50\\)\nprint\\(\\)\n\n# Validate structure\nquiz_data = mock_quiz_response[''quiz'']\nprint\\(f''✓ Quiz contains {len\\(quiz_data\\)} questions''\\)\n\nfor i, q in enumerate\\(quiz_data\\):\n    print\\(f''\\\\nQuestion {i+1}:''\\)\n    print\\(f''  ✓ Has question: {q[\"\"question\"\"][:50]}...''\\)\n    print\\(f''  ✓ Has {len\\(q[\"\"options\"\"]\\)} options''\\)\n    print\\(f''  ✓ Correct index: {q[\"\"correct_index\"\"]}''\\)\n    print\\(f''  ✓ Correct answer: {q[\"\"options\"\"][q[\"\"correct_index\"\"]]}''\\)\n    print\\(f''  ✓ Has explanation: {q[\"\"explanation\"\"][:40]}...''\\)\n\nprint\\(\\)\nprint\\(''='' * 50\\)\nprint\\(''All validation checks passed!''\\)\nprint\\(\\)\nprint\\(''JSON Response:''\\)\nprint\\(json.dumps\\(mock_quiz_response, indent=2\\)\\)\n\")",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat\\(api\\): add quiz generation endpoint with frontend component\n\n- Add POST /quiz endpoint for AI-generated 3-question quizzes\n- Quiz validates JSON structure \\(question, 4 options, correct_index, explanation\\)\n- Add Quiz.tsx component with HUD-style UI and framer-motion animations\n- Fix TypeScript type literal issues for framer-motion variants\n\n🤖 Generated with [Claude Code]\\(https://claude.com/claude-code\\)\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)"
     ]
   }
 }
